@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.example</groupId>
+  <artifactId>Ingestion</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <encoding>UTF-8</encoding>
+    <scala.version>2.12.10</scala.version>
+    <scala.compat.version>2.12</scala.compat.version>
+    <spec2.version>4.2.0</spec2.version>
+    <scala-logging.version>3.9.2</scala-logging.version>
+    <typesafe-config.version>1.3.4</typesafe-config.version>
+    <slf4j.version>1.7.26</slf4j.version>
+    <log4j2.version>2.11.2</log4j2.version>
+    <delta.version>0.7.0</delta.version>
+    <spark-fast-tests.version>0.23.0</spark-fast-tests.version>
+    <spark.version>3.1.2</spark.version>  <!-- MUST match Databricks Runtime 9.1 https://docs.databricks.com/release-notes/runtime/9.1.html#system-environment -->
+    <mongo-spark-connector.version>3.0.1</mongo-spark-connector.version> <!-- https://docs.mongodb.com/spark-connector/current/ -->
+    <configloader.version>0.1-SNAPSHOT</configloader.version>
+
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.scala-lang</groupId>
+      <artifactId>scala-library</artifactId>
+      <version>${scala.version}</version>
+    </dependency>
+
+    <!-- config dependency -->
+    <dependency>
+      <groupId>com.typesafe</groupId>
+      <artifactId>config</artifactId>
+      <version>${typesafe-config.version}</version>
+    </dependency>
+
+    <!-- log dependency -->
+    <dependency>
+      <groupId>com.typesafe.scala-logging</groupId>
+      <artifactId>scala-logging_${scala.compat.version}</artifactId>
+      <version>${scala-logging.version}</version>
+    </dependency>
+    <!-- SLF4 dependencies -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j2.version}</version>
+    </dependency>
+
+    <!-- mongodb dependency -->
+    <dependency>
+      <groupId>org.mongodb.spark</groupId>
+      <artifactId>mongo-spark-connector_${scala.compat.version}</artifactId>
+      <version>${mongo-spark-connector.version}</version>
+    </dependency>
+
+    <!-- Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.scalatest</groupId>
+      <artifactId>scalatest_${scala.compat.version}</artifactId>
+      <version>3.0.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.specs2</groupId>
+      <artifactId>specs2-core_${scala.compat.version}</artifactId>
+      <version>${spec2.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.specs2</groupId>
+      <artifactId>specs2-junit_${scala.compat.version}</artifactId>
+      <version>${spec2.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.mrpowers</groupId>
+      <artifactId>spark-fast-tests_${scala.compat.version}</artifactId>
+      <version>${spark-fast-tests.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <sourceDirectory>src/main/scala</sourceDirectory>
+    <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <!-- see http://davidb.github.com/scala-maven-plugin -->
+        <groupId>net.alchim31.maven</groupId>
+        <artifactId>scala-maven-plugin</artifactId>
+        <version>3.3.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+            <configuration>
+              <args>
+                <arg>-dependencyfile</arg>
+                <arg>${project.build.directory}/.scala_dependencies</arg>
+              </args>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.21.0</version>
+        <configuration>
+          <!-- Tests will be run with scalatest-maven-plugin instead -->
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.scalatest</groupId>
+        <artifactId>scalatest-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <configuration>
+          <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+          <junitxml>.</junitxml>
+          <filereports>TestSuiteReport.txt</filereports>
+          <!-- Comma separated list of JUnit test class names to execute -->
+          <jUnitClasses>samples.AppTest</jUnitClasses>
+          <skipTests>true</skipTests>
+
+        </configuration>
+        <executions>
+          <execution>
+            <id>test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <dependencies>
+        <!-- Spark dependencies -->
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-core_${scala.compat.version}</artifactId>
+          <version>${spark.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-sql_${scala.compat.version}</artifactId>
+          <version>${spark.version}</version>
+        </dependency>
+        <!-- Delta dependencies -->
+        <dependency>
+          <groupId>io.delta</groupId>
+          <artifactId>delta-core_${scala.compat.version}</artifactId>
+          <version>${delta.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <!-- Profile used to build the artifacts that goes into production environments.
+     Usually only used in CI automatic pipelines.
+    -->
+    <profile>
+      <id>prd</id>
+      <dependencies>
+        <!-- Spark dependencies -->
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-core_${scala.compat.version}</artifactId>
+          <version>${spark.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.spark</groupId>
+          <artifactId>spark-sql_${scala.compat.version}</artifactId>
+          <version>${spark.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <!-- Delta dependencies -->
+        <dependency>
+          <groupId>io.delta</groupId>
+          <artifactId>delta-core_${scala.compat.version}</artifactId>
+          <version>${delta.version}</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
+</project>
