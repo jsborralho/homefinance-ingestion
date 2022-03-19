@@ -1,0 +1,20 @@
+date,category,sub-category,description,value
+01-01-22,Income,Net Wage,,1191.36
+01-01-22,Income,Gross Wage,,1793
+01-01-22,Income,Benefits,,373
+01-01-22,Income,Lunch Subsidy,,160.23
+01-01-22,Income,Other,Celfocus,179.52
+01-01-22,Home Expenses,Mortgage/Rent,,350
+01-01-22,Home Expenses,Water,,10.12
+01-01-22,Home Expenses,Energy/Gas,,23.71
+01-01-22,Home Expenses,TV/Internet,,18.95
+01-01-22,Subscriptions,Spotify,,1.99
+01-01-22,Subscriptions,Netflix,,5.99
+01-01-22,Transportation,Public Transportation Lisbon,,6
+01-01-22,Transportation,Private Transportation Lisbon,,11.08
+01-01-22,Transportation,other,,11.9
+01-01-22,Savings,Investments,,300
+01-01-22,Daily Living,Groceries,,250.83
+01-01-22,Daily Living,Dining/eating out,,87.51
+01-01-22,Daily Living,Cleaning,,13.45
+01-01-22,Daily Living,Other,furniture,28.39
