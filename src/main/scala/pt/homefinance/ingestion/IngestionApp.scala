@@ -2,6 +2,8 @@ package pt.homefinance.ingestion
 
 import com.mongodb.spark.MongoSpark
 import com.typesafe.scalalogging.LazyLogging
+import org.apache.spark.sql.functions.col
+import org.apache.spark.sql.types.DateType
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import scala.io.Source
@@ -22,14 +24,16 @@ object IngestionApp extends LazyLogging{
       .config("spark.mongodb.output.uri", uri)
       .getOrCreate()
 
-    val df = spark.read
+    var df = spark.read
       .format("csv")
       .option("header", "true")
       .option("inferSchema", "true")
       .load(getClass.getClassLoader.getResource("").getPath)
 
-    //df.show(100)
+    df = df.withColumn("date", col("raw-date").cast(DateType)).
+      drop("raw-date")
 
+    df.show(100)
     MongoSpark.save(df.write.option("collection", "Home").mode("overwrite"))
 
   }
